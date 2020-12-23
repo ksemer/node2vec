@@ -24,13 +24,13 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description="Run node2vec.")
 
-    parser.add_argument('--input', nargs='?', default='../graph/book.edgelist',
+    parser.add_argument('--input', nargs='?', default='../graph/twitter.edgelist',
                         help='Input graph path')
 
-    parser.add_argument('--node-labels', dest='node_labels', default='../graph/book.com',
+    parser.add_argument('--node-labels', dest='node_labels', default='../graph/twitter.groups',
                         help='Input graph communities')
 
-    parser.add_argument('--output', nargs='?', default='../emb/book.emb',
+    parser.add_argument('--output', nargs='?', default='../emb/twitter.emb',
                         help='Embeddings path')
 
     parser.add_argument('--dimensions', type=int, default=128,
