@@ -13,8 +13,9 @@ import argparse
 from typing import Set, Any
 
 import networkx as nx
-import node2vec
 from gensim.models import Word2Vec
+
+from src.node2vec import Graph
 
 
 def parse_args():
@@ -118,7 +119,7 @@ def main(args):
     Pipeline for representational learning for all nodes in a graph.
     """
     nx_G, groups = read_graph()
-    G = node2vec.Graph(nx_G, args.directed, args.p, args.q, groups)
+    G = Graph(nx_G, args.directed, args.p, args.q, groups)
 
     if args.fairwalk:
         if groups is None or len(groups) < 2:
