@@ -22,7 +22,7 @@ class Graph:
             cur = walk[-1]
             cur_nbrs = sorted(G.neighbors(cur))
             if len(cur_nbrs) > 0:
-                group = random.randint(0, len(self.groups))
+                group = random.randint(0, len(self.groups) - 1)
                 group_cur_nbrs = [nbr for nbr in cur_nbrs if G.nodes[nbr]["group"] == group]
                 next_ = random.choice(group_cur_nbrs) if len(group_cur_nbrs) > 0 else random.choice(cur_nbrs)
                 prev = cur if len(walk) == 1 else walk[-2]
