@@ -1,26 +1,15 @@
-"""
-Reference implementation of node2vec.
-
-Author: Aditya Grover
-
-For more details, refer to the paper:
-node2vec: Scalable Feature Learning for Networks
-Aditya Grover and Jure Leskovec
-Knowledge Discovery and Data Mining (KDD), 2016
-"""
-
 import argparse
 from typing import Set, Any
 
 import networkx as nx
 from gensim.models import Word2Vec
 
-from src.node2vec import Graph
+from src.GraphWalks import Graph
 
 
 def parse_args():
     """
-    Parses the node2vec arguments.
+    Parses the node2vec and fairwalk arguments.
     """
     parser = argparse.ArgumentParser(description="Run node2vec.")
 
@@ -84,10 +73,10 @@ def read_graph():
         for edge in G.edges():
             G[edge[0]][edge[1]]['weight'] = 1
 
+    groups: Set[Any] = set()
     if args.node_labels:
         file = open(args.node_labels, 'r')
         lines = file.readlines()
-        groups: Set[Any] = set()
         for line in lines:
             id_, group = line.split()
             id_ = int(id_)
@@ -105,9 +94,8 @@ def learn_embeddings(walks):
     """
     Learn embeddings by optimizing the Skipgram objective using SGD.
     """
-    walks = [map(str, walk) for walk in walks]
-    model = Word2Vec(walks, size=args.dimensions, window=args.window_size, min_count=0, sg=1, workers=args.workers,
-                     iter=args.iter)
+    model = Word2Vec(walks, vector_size=args.dimensions, window=args.window_size, min_count=0, sg=1, workers=args.workers,
+                     epochs=args.iter)
 
     model.wv.save_word2vec_format(args.output)
 
@@ -120,7 +108,11 @@ def main(args):
     """
     nx_G, groups = read_graph()
     G = Graph(nx_G, args.directed, args.p, args.q, groups)
+    from gensim.test.utils import common_texts
+    print(type(common_texts))
+    print(common_texts)
 
+    # enable fair walk
     if args.fairwalk:
         if groups is None or len(groups) < 2:
             raise Exception("Groups are configured wrong")
@@ -128,6 +120,7 @@ def main(args):
     else:
         G.preprocess_transition_probs()
         walks = G.simulate_walks(args.num_walks, args.walk_length)
+    # construct embeddings
     learn_embeddings(walks)
 
 
